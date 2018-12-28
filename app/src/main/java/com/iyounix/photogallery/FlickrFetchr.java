@@ -77,8 +77,14 @@ public class FlickrFetchr {
     //取出每张图片的信息，生成一个个GalleryItem对象，再将它们添加到List中
     private void parseItems(List<GalleryItem> items, JSONObject jsonBody)
             throws IOException, JSONException {
+
+        // 顶层JSONObject对应着原始数据最外层的{ }
+        // 它包含了一个叫作photos的嵌套JSONObject
+        // 这个嵌套对象又包含了一个叫作photo的JSONArray
+        // 这个嵌套数组中又包含了一组JSONObject，而数组中的一个个JSONObject就是要获取的图片metadata数据
         JSONObject photosJsonObject = jsonBody.getJSONObject("photos");
         JSONArray photoJsonArray = photosJsonObject.getJSONArray("photo");
+
         for (int i = 0; i < photoJsonArray.length(); i++) {
             JSONObject photoJsonObject = photoJsonArray.getJSONObject(i);
             GalleryItem item = new GalleryItem();
