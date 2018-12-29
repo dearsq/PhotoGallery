@@ -18,7 +18,7 @@ import java.util.List;
 public class FlickrFetchr {
 
     private static final String TAG = "FlickrFetchr";
-    private static final String API_KEY = "4f721bgafa75bf6d2cb9af54f937bb70";
+    private static final String API_KEY = "9420b336cae1201ce4b600df1a21cb2a";
 
     // 从指定URL获取原始数据并返回一个字节流数组
     public byte[] getUrlBytes(String urlSpec) throws IOException {
