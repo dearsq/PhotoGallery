@@ -1,6 +1,7 @@
 package com.iyounix.photogallery;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.List;
 
 
 public class PhotoGalleryFragment extends Fragment {
@@ -46,6 +49,32 @@ public class PhotoGalleryFragment extends Fragment {
         }
         public void bindGalleryItem(GalleryItem item) {
             mTitleTextView.setText(item.toString());
+        }
+    }
+
+    private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
+        private List<GalleryItem> mGalleryItems;
+
+        public PhotoAdapter(List<GalleryItem> galleryItems) {
+            mGalleryItems = galleryItems;
+        }
+
+        @NonNull
+        @Override
+        public PhotoHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            TextView textView = new TextView(getActivity());
+            return new PhotoHolder(textView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull PhotoHolder photoHolder, int i) {
+            GalleryItem galleryItem = mGalleryItems.get(i);
+            photoHolder.bindGalleryItem(galleryItem);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mGalleryItems.size();
         }
     }
 
