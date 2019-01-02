@@ -45,7 +45,9 @@ public class PhotoGalleryFragment extends Fragment {
         return v;
     }
 
+    // setupAdapter() 方法更新 RecyclerView视图的adapter
     private void setupAdapter() {
+        //配置adapter前，应检查isAdded()的返回值是否为true。该检查确认fragment已与目标activity相关联，从而保证getActivity()方法返回结果非空
         if (isAdded()) {
             mPhotoRecyclerView.setAdapter(new PhotoAdapter(mItems));
         }
@@ -89,10 +91,10 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     //实现AsyncTask工具类方法
-    private class FetchItemsTask extends AsyncTask<Void,Void,Void> {
+    private class FetchItemsTask extends AsyncTask<Void,Void,List<GalleryItem>> {
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected List<GalleryItem> doInBackground(Void... voids) {
 //            try {
 //                String result = new FlickrFetchr()
 //                        .getUrlString("https://iyounix.com");
@@ -100,8 +102,14 @@ public class PhotoGalleryFragment extends Fragment {
 //            } catch (IOException e) {
 //                Log.e(TAG, "doInBackground: Failed to fetch URL: ", e );
 //            }
-            new FlickrFetchr().fetchItems();
-            return null;
+            return new FlickrFetchr().fetchItems();
+        }
+
+        //onPostExecute(...)方法在doInBackground(...)方法执行完毕后才会运行。
+        @Override
+        protected void onPostExecute(List<GalleryItem> galleryItems) {
+            mItems = galleryItems;
+            setupAdapter();
         }
     }
 }
