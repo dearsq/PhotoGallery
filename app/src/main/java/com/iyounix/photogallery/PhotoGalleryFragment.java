@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ public class PhotoGalleryFragment extends Fragment {
     private RecyclerView mPhotoRecyclerView;
     private static final String TAG = "PhotoGalleryFragment";
     private List<GalleryItem> mItems = new ArrayList<>();
+    //ThumbnailDownloader 的泛型参数支持任何对象, PhotoHolder 最适合的原因是该视图是最终显示下载图片的地方.
+    private ThumbnailDownloader<PhotoHolder> mThumbnailDownloader;
 
     public static PhotoGalleryFragment newInstance() {
         return new PhotoGalleryFragment();
@@ -33,6 +36,11 @@ public class PhotoGalleryFragment extends Fragment {
         setRetainInstance(true);
         //调用execute()方法会启动AsyncTask，进而触发后台线程并调用doInBackground(...)方法
         new FetchItemsTask().execute();
+
+        mThumbnailDownloader = new ThumbnailDownloader<>();
+        mThumbnailDownloader.start(); //1.
+        mThumbnailDownloader.getLooper(); //2.
+        Log.i(TAG, "Background thread started");
     }
 
     @Override
@@ -45,6 +53,13 @@ public class PhotoGalleryFragment extends Fragment {
         setupAdapter();
 
         return v;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mThumbnailDownloader.quit();
+        Log.i(TAG, "Background thread destroyed");
     }
 
     // setupAdapter() 方法更新 RecyclerView视图的adapter
