@@ -40,6 +40,9 @@ public class PhotoGalleryFragment extends Fragment {
         mThumbnailDownloader = new ThumbnailDownloader<>();
         mThumbnailDownloader.start(); //1.
         mThumbnailDownloader.getLooper(); //2.
+        // getLooper 调用晚于 start, 这能保证线程就绪，避免潜在竞争（尽管极少发生）。
+        // 因为getLooper()方法能执行成功，说明onLooperPrepared()方法肯定早已完成。
+        // 这样，queueThumbnail()方法因Handler为空而调用失败的情况就能避免了。
         Log.i(TAG, "Background thread started");
     }
 
@@ -58,6 +61,7 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        //不终止的话会成为僵尸进程
         mThumbnailDownloader.quit();
         Log.i(TAG, "Background thread destroyed");
     }
@@ -101,6 +105,7 @@ public class PhotoGalleryFragment extends Fragment {
             GalleryItem galleryItem = mGalleryItems.get(i);
             Drawable placeholder = getResources().getDrawable(R.drawable.bill_up_close);
             photoHolder.bindDrawable(placeholder);
+            mThumbnailDownloader.queueThumbnail(photoHolder, galleryItem.getUrl());
         }
 
         @Override
