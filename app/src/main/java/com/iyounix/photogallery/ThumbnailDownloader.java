@@ -13,10 +13,10 @@ import java.util.concurrent.ConcurrentMap;
 // 并确定该使用已下载图片更新哪个UI元素。
 public class ThumbnailDownloader<T> extends HandlerThread {
     private static final String TAG = "ThumbnailDownloader";
-    private static final int MESSAGE_DOWNLOAD = 0;
+    private static final int MESSAGE_DOWNLOAD = 0; //用来标志下载请求消息
     private Boolean mHasQuit = false;
-    private Handler mRequestHandler;
-    private ConcurrentMap<T,String> mRequestMap = new ConcurrentHashMap<>();
+    private Handler mRequestHandler; //用来存储对 Handler 的引用 //负责在ThumbnailDownloader 后台线程上管理下载请求消息队列
+    private ConcurrentMap<T,String> mRequestMap = new ConcurrentHashMap<>(); //线程安全的 HashMap
 
     //存根方法
     public ThumbnailDownloader() {
@@ -33,6 +33,16 @@ public class ThumbnailDownloader<T> extends HandlerThread {
         Log.i(TAG, "Got a URL:" + url);
 
         //获取并发送信息给他的目标
+        if (url == null) {
+            mRequestMap.remove(target);
+        } else {
+            mRequestMap.put(target, url);
+            // what: MESSAGE_DOWNLOAD
+            // obj:  PhotoHolder
+            //
+            mRequestHandler.obtainMessage(MESSAGE_DOWNLOAD, target)
+                           .sendToTarget();
+        }
     }
 }
 
