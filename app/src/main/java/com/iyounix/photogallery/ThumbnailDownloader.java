@@ -34,21 +34,27 @@ public class ThumbnailDownloader<T> extends HandlerThread {
 
 
     // 初始化 mRequestHandler 并定义该 Handler 在得到消息队列中的下载消息后应执行的任务
+    // HandlerThread.onLooperPrepared()是在Looper首次检查消息队列之前调用，所以该方法是创建Handler实现的好地方
     @Override
     protected void onLooperPrepared() {
 
         mRequestHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
+                //1.首先检查消息类型
                 if (msg.what == MESSAGE_DOWNLOAD) {
+                    //2.再获取obj值
                     T target = (T) msg.obj;
                     Log.i(TAG, "Got a request for URL: " + mRequestMap.get(target));
+                    //3.传递给handleRequest(...)方法处理
                     handleRequest(target);
                 }
             }
         };
     }
 
+    //下载执行的地方
+    //确认URL有效后，就将它传递给 FlickrFetchr 新实例
     private void handleRequest(final T target) {
         try {
             final String url = mRequestMap.get(target);
@@ -56,6 +62,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
                 return;
             }
             byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+            //使用BitmapFactory把getUrlBytes返回的字节数组转化为位图
             final Bitmap bitmap = BitmapFactory
                     .decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
             Log.i(TAG, "Bitmap created");
@@ -63,7 +70,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
             Log.e(TAG, "Error downloading image", ioe);
         }
     }
-    }
+
 
     //queueThumbnail 方法需要T类型的对象target 和 String的URL链接)
     public void queueThumbnail(T target, String url) {
