@@ -1,9 +1,13 @@
 package com.iyounix.photogallery;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Message;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -26,6 +30,39 @@ public class ThumbnailDownloader<T> extends HandlerThread {
     public boolean quit() {
         mHasQuit = true;
         return super.quit();
+    }
+
+
+    // 初始化 mRequestHandler 并定义该 Handler 在得到消息队列中的下载消息后应执行的任务
+    @Override
+    protected void onLooperPrepared() {
+
+        mRequestHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == MESSAGE_DOWNLOAD) {
+                    T target = (T) msg.obj;
+                    Log.i(TAG, "Got a request for URL: " + mRequestMap.get(target));
+                    handleRequest(target);
+                }
+            }
+        };
+    }
+
+    private void handleRequest(final T target) {
+        try {
+            final String url = mRequestMap.get(target);
+            if (url == null) {
+                return;
+            }
+            byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+            final Bitmap bitmap = BitmapFactory
+                    .decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+            Log.i(TAG, "Bitmap created");
+        } catch (IOException ioe) {
+            Log.e(TAG, "Error downloading image", ioe);
+        }
+    }
     }
 
     //queueThumbnail 方法需要T类型的对象target 和 String的URL链接)
