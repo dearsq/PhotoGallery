@@ -22,17 +22,17 @@ public class ThumbnailDownloader<T> extends HandlerThread {
     private Handler mRequestHandler; //用来存储对 Handler 的引用 //负责在ThumbnailDownloader 后台线程上管理下载请求消息队列
     private ConcurrentMap<T,String> mRequestMap = new ConcurrentHashMap<>(); //线程安全的 HashMap
 
-    private Handler mResponseHandler;
-    private ThumbnailDownloaderListener<T> mThumbnailDownloaderListener;
+    private Handler mResponseHandler; //通过 mResponseHandler ThumbnailDownloadListener 能够使用与主线程 Looper 绑定的 Handler
+    private ThumbnailDownloadListener<T> mThumbnailDownloadListener;
 
     // 在图片下载完成时, 可以交给 UI 显示
     // 定义在 ThumbnailDownlodListener 新接口中的 onThumbnailDownloaded 方法就会被调用
-    public interface ThumbnailDownloaderListener<T> {
+    public interface ThumbnailDownloadListener<T> {
         void onThumbnailDownloaded(T target, Bitmap thumbnail);
     }
 
-    public void setThumbnailDownloaderListener(ThumbnailDownloaderListener<T> listener) {
-        mThumbnailDownloaderListener = listener;
+    public void setThumbnailDownloadListener(ThumbnailDownloadListener<T> listener) {
+        mThumbnailDownloadListener = listener;
     }
 
     public ThumbnailDownloader(Handler responseHandler) {

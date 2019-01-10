@@ -1,7 +1,10 @@
 package com.iyounix.photogallery;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -37,7 +40,20 @@ public class PhotoGalleryFragment extends Fragment {
         //调用execute()方法会启动AsyncTask，进而触发后台线程并调用doInBackground(...)方法
         new FetchItemsTask().execute();
 
+        //使用反馈 Handler step1.
+        Handler responserHandler = new Handler();
         mThumbnailDownloader = new ThumbnailDownloader<>();
+        //使用反馈 Handler step2. 设置 listener 处理图片
+        mThumbnailDownloader.setThumbnailDownloadListener(
+                new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
+                    @Override
+                    public void onThumbnailDownloaded(PhotoHolder photoHolder, Bitmap bitmap) {
+                        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                        photoHolder.bindDrawable(drawable);
+                    }
+                }
+        );
+
         mThumbnailDownloader.start(); //1.
         mThumbnailDownloader.getLooper(); //2.
         // getLooper 调用晚于 start, 这能保证线程就绪，避免潜在竞争（尽管极少发生）。
