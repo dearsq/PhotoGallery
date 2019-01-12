@@ -121,5 +121,10 @@ public class ThumbnailDownloader<T> extends HandlerThread {
         // 根据 PhotoHolder 和 URL 的对应关系更新 mRequestMap
         // 然后从 mRequestMap 中取出图片 URL, 以保证总是使用了匹配 PhotoHolder 实例的最新下载请求 URL
     }
+
+    public void clearQueue() {
+        mRequestHandler.removeMessages(MESSAGE_DOWNLOAD);
+        mRequestMap.clear();
+    }
 }
 
