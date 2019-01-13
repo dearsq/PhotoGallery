@@ -74,6 +74,12 @@ public class PhotoGalleryFragment extends Fragment {
         return v;
     }
 
+    //调用清理方法
+    public void onDestroyView() {
+        super.onDestroyView();
+        mThumbnailDownloader.clearQueue();
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
