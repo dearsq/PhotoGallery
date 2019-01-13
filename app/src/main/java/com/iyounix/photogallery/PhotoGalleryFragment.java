@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +41,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         //使用反馈 Handler step1.
         Handler responserHandler = new Handler();
-        mThumbnailDownloader = new ThumbnailDownloader<>();
+        mThumbnailDownloader = new ThumbnailDownloader<>(responserHandler);
         //使用反馈 Handler step2. 设置 listener 处理图片
         mThumbnailDownloader.setThumbnailDownloadListener(
                 new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {

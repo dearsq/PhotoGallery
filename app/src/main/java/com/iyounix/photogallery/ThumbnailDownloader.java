@@ -40,11 +40,6 @@ public class ThumbnailDownloader<T> extends HandlerThread {
         mResponseHandler = responseHandler;
     }
 
-    //存根方法
-    public ThumbnailDownloader() {
-        super(TAG);
-    }
-
     public boolean quit() {
         mHasQuit = true;
         return super.quit();
