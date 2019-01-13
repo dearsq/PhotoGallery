@@ -86,13 +86,13 @@ public class ThumbnailDownloader<T> extends HandlerThread {
             Log.i(TAG, "Bitmap created");
             //图片下载与显示
             mResponseHandler.post(new Runnable() {
+                @Override
                 public void run() {
-                    if (mRequestMap.get(target) != url ||
-                            mHasQuit) {
+                    if (mRequestMap.get(target) != url || mHasQuit) {
                         return;
                     }
                     mRequestMap.remove(target);
-                    mThumbnailDownloadListener.onThumbnailDownloaded(target, bitmap);
+                    mThumbnailDownloadListener.onThumbnailDownloaded(target,bitmap);
                 }
             });
         } catch (IOException ioe) {
